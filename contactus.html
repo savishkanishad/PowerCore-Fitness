@@ -58,6 +58,57 @@
         navLinks.classList.toggle('nav__links--open');
         navToggle.classList.toggle('nav__toggle--open');
       });
+
+      // Advanced Contact Form Validation
+      document.querySelector('.form__wrapper').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const name = this.name.value.trim();
+        const email = this.email.value.trim();
+        const message = this.message.value.trim();
+        let errors = [];
+
+        // Name validation
+        if (name.length < 3) {
+          errors.push('Name must be at least 3 characters long.');
+        }
+        // Email validation
+        const emailPattern = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+        if (!emailPattern.test(email)) {
+          errors.push('Please enter a valid email address.');
+        }
+        // Message validation
+        if (message.length < 10) {
+          errors.push('Message must be at least 10 characters long.');
+        }
+
+        if (errors.length > 0) {
+          alert(errors.join('\n'));
+          return;
+        }
+
+        // If validation passes, submit via fetch
+        const formData = new FormData(this);
+        fetch('process_contact.php', {
+          method: 'POST',
+          body: formData
+        })
+        .then(() => {
+          alert('Message sent successfully!');
+          this.reset();
+        })
+        .catch(error => {
+          alert('An error occurred: ' + error.message);
+        });
+      });
+    </script>
+    <script>
+      // Hamburger menu toggle
+      const navToggle = document.querySelector('.nav__toggle');
+      const navLinks = document.querySelector('.nav__links');
+      navToggle.addEventListener('click', () => {
+        navLinks.classList.toggle('nav__links--open');
+        navToggle.classList.toggle('nav__toggle--open');
+      });
     </script>
   </body>
 </html>
