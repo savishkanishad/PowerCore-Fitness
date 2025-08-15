@@ -142,86 +142,70 @@
     </script>
 
  <script>
-    // Handle Login Form
-    document.getElementById('login-form').addEventListener('submit', function(event) {
-      event.preventDefault();
-      const formData = new FormData(this);
-      fetch('process_login.php', {
-        method: 'POST',
-        body: formData
-      })
-      .then(response => response.json())
-      .then(data => {
-        alert(data.message);
-        if (data.success) {
-          document.getElementById('login-form').reset();
+
+        // Improved Register Form Validation
+        const registerForm = document.querySelector('.register__form');
+        if (registerForm) {
+          registerForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const name = registerForm.querySelector('input[name="name"]').value.trim();
+            const email = registerForm.querySelector('input[name="email"]').value.trim();
+            const password = registerForm.querySelector('input[name="password"]').value;
+            const confirmPassword = registerForm.querySelector('input[name="confirm_password"]').value;
+            const phone = registerForm.querySelector('input[name="phone"]').value.trim();
+            const program = registerForm.querySelector('select[name="program"]').value;
+            let errors = [];
+
+            // Name validation
+            if (name.length < 3) {
+              errors.push('Name must be at least 3 characters long.');
+            }
+            // Email validation
+            const emailPattern = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+            if (!emailPattern.test(email)) {
+              errors.push('Please enter a valid email address.');
+            }
+            // Password validation
+            if (password.length < 6) {
+              errors.push('Password must be at least 6 characters long.');
+            }
+            // Confirm password
+            if (password !== confirmPassword) {
+              errors.push('Passwords do not match.');
+            }
+            // Phone validation
+            const phonePattern = /^[0-9]{10,15}$/;
+            if (!phonePattern.test(phone)) {
+              errors.push('Please enter a valid phone number (10-15 digits).');
+            }
+            // Program selection
+            if (!program) {
+              errors.push('Please select a program.');
+            }
+
+            if (errors.length > 0) {
+              alert(errors.join('\n'));
+              return;
+            }
+
+            // If validation passes, submit via fetch
+            const formData = new FormData(registerForm);
+            fetch('process_register.php', {
+              method: 'POST',
+              body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+              alert(data.message);
+              if (data.success) {
+                registerForm.reset();
+              }
+            })
+            .catch(error => {
+              alert('An error occurred: ' + error.message);
+            });
+          });
         }
-      })
-      .catch(error => {
-        alert('An error occurred: ' + error.message);
-      });
-    });
-
-    // Advanced Register Form Validation
-    document.getElementById('register-form').addEventListener('submit', function(event) {
-      event.preventDefault();
-      const name = this.name.value.trim();
-      const email = this.email.value.trim();
-      const password = this.password.value;
-      const confirmPassword = this.confirm_password.value;
-      const phone = this.phone.value.trim();
-      const program = this.program.value;
-      let errors = [];
-
-      // Name validation
-      if (name.length < 3) {
-        errors.push('Name must be at least 3 characters long.');
-      }
-      // Email validation
-      const emailPattern = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
-      if (!emailPattern.test(email)) {
-        errors.push('Please enter a valid email address.');
-      }
-      // Password validation
-      if (password.length < 6) {
-        errors.push('Password must be at least 6 characters long.');
-      }
-      // Confirm password
-      if (password !== confirmPassword) {
-        errors.push('Passwords do not match.');
-      }
-      // Phone validation
-      const phonePattern = /^[0-9]{10,15}$/;
-      if (!phonePattern.test(phone)) {
-        errors.push('Please enter a valid phone number (10-15 digits).');
-      }
-      // Program selection
-      if (!program) {
-        errors.push('Please select a program.');
-      }
-
-      if (errors.length > 0) {
-        alert(errors.join('\n'));
-        return;
-      }
-
-      // If validation passes, submit via fetch
-      const formData = new FormData(this);
-      fetch('process_register.php', {
-        method: 'POST',
-        body: formData
-      })
-      .then(response => response.json())
-      .then(data => {
-        alert(data.message);
-        if (data.success) {
-          document.getElementById('register-form').reset();
-        }
-      })
-      .catch(error => {
-        alert('An error occurred: ' + error.message);
-      });
-    });
     </script>
 
 
