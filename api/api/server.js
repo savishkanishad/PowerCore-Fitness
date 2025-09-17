@@ -42,4 +42,39 @@ app.get("/api/users", async (req, res) => {
 });
 
 // 👇 Export as serverless function (important for Vercel)
+// ✅ User registration route
+app.post("/api/register", async (req, res) => {
+  const { name, email, password, phone, program } = req.body;
+  if (!name || !email || !password || !phone || !program) {
+    return res.status(400).json({ error: "All fields are required." });
+  }
+  try {
+    const connection = await connectDB();
+    // You may want to hash the password before saving in production
+    await connection.query(
+      "INSERT INTO users (name, email, password, phone, program) VALUES (?, ?, ?, ?, ?)",
+      [name, email, password, phone, program]
+    );
+    res.json({ success: true, message: "User registered successfully." });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+// ✅ Contact form submission route
+app.post("/api/contact", async (req, res) => {
+  const { name, email, message } = req.body;
+  if (!name || !email || !message) {
+    return res.status(400).json({ error: "All fields are required." });
+  }
+  try {
+    const connection = await connectDB();
+    await connection.query(
+      "INSERT INTO contact_messages (name, email, message) VALUES (?, ?, ?)",
+      [name, email, message]
+    );
+    res.json({ success: true, message: "Contact details submitted successfully." });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 export const handler = serverless(app);
