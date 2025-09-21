@@ -195,19 +195,22 @@
               body: JSON.stringify({ name, email, password, phone, program })
             })
             .then(async response => {
+              let data, text;
               try {
-                const data = await response.json();
-                alert(data.message || 'Registration successful!');
-                if (data.success) {
-                  registerForm.reset();
-                }
+                data = await response.json();
               } catch (err) {
                 if (!response.bodyUsed) {
-                  const text = await response.text();
+                  text = await response.text();
                   alert('Server returned invalid JSON. Raw response: ' + text);
+                  return;
                 } else {
                   alert('Server returned invalid JSON and body already read.');
+                  return;
                 }
+              }
+              alert((data && data.message) || 'Registration successful!');
+              if (data && data.success) {
+                registerForm.reset();
               }
             })
             .catch(error => {
