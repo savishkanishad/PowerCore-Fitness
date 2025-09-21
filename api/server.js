@@ -1,5 +1,5 @@
 import express from "express";
-import mysql from "mysql2/promise";
+import { Pool } from "pg";
 import dotenv from "dotenv";
 import serverless from "serverless-http";   // 👈 makes Express work on Vercel
 
@@ -7,19 +7,15 @@ dotenv.config();
 const app = express();
 app.use(express.json());
 
-// ✅ Database connection (lazy)
-let db;
-const connectDB = async () => {
-  if (!db) {
-    db = await mysql.createConnection({
-      host: process.env.DB_HOST,
-      user: process.env.DB_USER,
-      password: process.env.DB_PASS,
-      database: process.env.DB_NAME
-    });
-  }
-  return db;
-};
+// ✅ PostgreSQL connection pool
+const pool = new Pool({
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT || 5432,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASS,
+  database: process.env.DB_NAME,
+  ssl: { rejectUnauthorized: false }
+});
 
 // ✅ Test route
 app.get("/hello", (req, res) => {
@@ -29,8 +25,7 @@ app.get("/hello", (req, res) => {
 // ✅ Example DB route
 app.get("/users", async (req, res) => {
   try {
-    const connection = await connectDB();
-    const [rows] = await connection.query("SELECT * FROM users");
+    const { rows } = await pool.query("SELECT * FROM users");
     res.json(rows);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -44,9 +39,8 @@ app.post("/register", async (req, res) => {
     return res.status(400).json({ error: "All fields are required." });
   }
   try {
-    const connection = await connectDB();
-    await connection.query(
-      "INSERT INTO users (name, email, password, phone, program) VALUES (?, ?, ?, ?, ?)",
+    await pool.query(
+      "INSERT INTO users (name, email, password, phone, program) VALUES ($1, $2, $3, $4, $5)",
       [name, email, password, phone, program]
     );
     res.json({ success: true, message: "User registered successfully." });
@@ -62,9 +56,8 @@ app.post("/contact", async (req, res) => {
     return res.status(400).json({ error: "All fields are required." });
   }
   try {
-    const connection = await connectDB();
-    await connection.query(
-      "INSERT INTO contact_messages (name, email, message) VALUES (?, ?, ?)",
+    await pool.query(
+      "INSERT INTO contact_messages (name, email, message) VALUES ($1, $2, $3)",
       [name, email, message]
     );
     res.json({ success: true, message: "Contact details submitted successfully." });
