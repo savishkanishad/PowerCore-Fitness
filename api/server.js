@@ -66,5 +66,10 @@ app.post("/contact", async (req, res) => {
   }
 });
 
+// Catch-all route for unknown endpoints
+app.use((req, res) => {
+  res.status(404).json({ error: 'Endpoint not found' });
+});
+
 // 👇 Export as serverless function (important for Vercel)
 export default serverless(app);
