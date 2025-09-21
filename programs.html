@@ -202,8 +202,12 @@
                   registerForm.reset();
                 }
               } catch (err) {
-                const text = await response.text();
-                alert('Server returned invalid JSON. Raw response: ' + text);
+                if (!response.bodyUsed) {
+                  const text = await response.text();
+                  alert('Server returned invalid JSON. Raw response: ' + text);
+                } else {
+                  alert('Server returned invalid JSON and body already read.');
+                }
               }
             })
             .catch(error => {
