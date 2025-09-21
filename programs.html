@@ -194,11 +194,16 @@
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ name, email, password, phone, program })
             })
-            .then(response => response.json())
-            .then(data => {
-              alert(data.message || 'Registration successful!');
-              if (data.success) {
-                registerForm.reset();
+            .then(async response => {
+              try {
+                const data = await response.json();
+                alert(data.message || 'Registration successful!');
+                if (data.success) {
+                  registerForm.reset();
+                }
+              } catch (err) {
+                const text = await response.text();
+                alert('Server returned invalid JSON. Raw response: ' + text);
               }
             })
             .catch(error => {
@@ -208,30 +213,7 @@
         }
     </script>
 
-<script>
-      document.querySelector('.register__form').addEventListener('submit', function(event) {
-        event.preventDefault();
-        const name = this.name.value.trim();
-        const email = this.email.value.trim();
-        const password = this.password.value;
-        const phone = this.phone.value.trim();
-        const program = this.program.value;
-
-        fetch('/api/register', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, email, password, phone, program })
-        })
-        .then(response => response.json())
-        .then(data => {
-          alert(data.message || 'Registration successful!');
-          this.reset();
-        })
-        .catch(error => {
-          alert('An error occurred: ' + error.message);
-        });
-      });
-    </script>
+    <!-- Removed duplicate submit event listener for register form -->
 
   </body>
 </html>
