@@ -23,6 +23,11 @@
       <li class="link"><a href="contactus.php">Contact Us</a></li>
     </ul>
     <button class="btn" onclick="window.location.href='programs.php#login-form'">Join Now</button>
+    <button class="nav__toggle" aria-label="Open Menu">
+      <span class="nav__toggle-bar"></span>
+      <span class="nav__toggle-bar"></span>
+      <span class="nav__toggle-bar"></span>
+    </button>
   </nav>
 
   <section class="section__container">
@@ -66,6 +71,16 @@
   <footer class="section__container footer">
     <p>© 2025 PowerCore Fitness. All rights reserved.</p>
   </footer>
+
+  <script>
+    // Hamburger menu toggle
+    const navToggle = document.querySelector('.nav__toggle');
+    const navLinks = document.querySelector('.nav__links');
+    navToggle.addEventListener('click', () => {
+      navLinks.classList.toggle('nav__links--open');
+      navToggle.classList.toggle('nav__toggle--open');
+    });
+  </script>
 </body>
 
 </html>
